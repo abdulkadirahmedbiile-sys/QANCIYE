@@ -1,1 +1,100 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QANCIYE STADIUM </title>
+    <style>
+        :root { --p: #2ecc71; --s: #2c3e50; --d: #e74c3c; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+        body { background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .container { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 15px; width: 100%; max-width: 800px; }
+        .page { display: none; } .page.active { display: block; }
+        h1, h2, h3 { text-align: center; margin-bottom: 20px; color: var(--s); }
+        h1 { color: var(--p); border-bottom: 2px solid #ddd; padding-bottom: 10px; }
+        p { color: #555; line-height: 1.6; margin-bottom: 20px; text-align: justify; }
+        button { background: var(--p); color: white; border: none; padding: 12px; font-weight: bold; border-radius: 25px; cursor: pointer; display: block; margin: 20px auto 0; width: 60%; }
+        button:hover { background: #27ae60; transform: scale(1.05); }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; color: var(--s); font-weight: 600; }
+        input, select { width: 100%; padding: 12px; border: 2px solid #bdc3c7; border-radius: 8px; }
+        input:focus, select:focus { border-color: var(--p); outline: none; }
+        .table-container { margin-top: 25px; display: none; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+        th { background: var(--s); color: white; }
+        tr:nth-child(even) { background: #f2f2f2; }
+        .status-active { color: #27ae60; font-weight: bold; }
+        .status-cancelled { color: var(--d); font-weight: bold; }
+        .summary-box { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 20px; background: #eee; padding: 15px; border-radius: 8px; }
+        .summary-card { text-align: center; padding: 10px; background: white; border-radius: 5px; }
+        .summary-card span { display: block; font-size: 18px; font-weight: bold; color: #3498db; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="page1" class="page active">
+            <h1>Kusoo Dhawaada QANCIYE Stadium</h1>
+            <p><strong>Garoonka Caalamiga ah ee QANCIYE</strong> waa xarun casri ah oo loogu talagalay horumarinta ciyaaraha iyo madaddaalada. Waa garoon ku qalabaysan roogga cagaaran ee ugu tayada sarreeya, iftiin casri ah oo habeenkii loogu talagalay ciyaaraha, iyo kuraas raaxo leh oo loogu talagalay taageerayaasha. System-kan wuxuu kuu sahlayaa inaad si buuxda u maamusho kulamada, xogta maalinlaha ah, kharasaadka, iyo xaaladda guud ee garoonka si hufan oo dijitaal ah.</p>
+            <button onclick="go(2)">Next (Sii Soco) &rarr;</button>
+        </div>
 
+        <div id="page2" class="page">
+            <h2>Gali System-ka (Login)</h2>
+            <div id="err" style="color: var(--d); text-align: center; margin-bottom: 10px; font-weight: bold;"></div>
+            <div class="form-group"><label>Username</label><input type="text" id="user" placeholder="admin"></div>
+            <div class="form-group"><label>Password</label><input type="password" id="pass" placeholder="1234"></div>
+            <button onclick="login()">Login</button>
+        </div>
+
+        <div id="page3" class="page">
+            <h2>Maamulka Kulanka & Xaaladda Garoonka</h2>
+            <form id="f" onsubmit="save(event)">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group"><label>Magaca Kulanka</label><input type="text" id="mName" required></div>
+                    <div class="form-group"><label>Waqtiga (Daqiiqo)</label><input type="number" id="dur" required></div>
+                    <div class="form-group"><label>Kharashka (\$)</label><input type="number" id="inc" required></div>
+                    <div class="form-group"><label>Xaaladda</label><select id="st"><option value="La Ciyaaray">La Ciyaaray</option><option value="Waa Baaqday">Waa Baaqday</option></select></div>
+                </div>
+                <button type="submit" style="width: 100%;">Kaydi Xogta Kulanka</button>
+            </form>
+            <button onclick="toggle()" style="background: var(--s); width: 100%; margin-top: 15px;">📊 Eeg / Qari Xogta Diiwaangashan</button>
+            <div id="tCon" class="table-container">
+                <div class="summary-box">
+                    <div class="summary-card">Kulamada: <span id="tM">0</span></div>
+                    <div class="summary-card">Dakhliga: <span id="tI">\$0</span></div>
+                    <div class="summary-card">Baaqday: <span id="tC">0</span></div>
+                </div>
+                <table>
+                    <thead><tr><th>Taariikh & Maalin</th><th>Kulanka</th><th>Waqtiga</th><th>Kharashka</th><th>Xaaladda</th></tr></thead>
+                    <tbody id="tBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let db = [];
+        function go(n) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById(`page${n}`).classList.add('active'); }
+        function login() { 
+            if (document.getElementById('user').value === 'admin' && document.getElementById('pass').value === '1234') { go(3); } 
+            else { document.getElementById('err').innerText = "Username ama Password waa khalad! (admin/1234)"; }
+        }
+        function save(e) {
+            e.preventDefault();
+            let name = document.getElementById('mName').value, dur = document.getElementById('dur').value, inc = parseFloat(document.getElementById('inc').value), st = document.getElementById('st').value;
+            if(st === "Waa Baaqday") inc = 0;
+            db.push({ dt: new Date().toLocaleDateString('so-SO', { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric' }), name, dur: st === "Waa Baaqday" ? "0" : dur + " min", inc, st });
+            document.getElementById('f').reset(); update(); alert("La kaydiyey!");
+        }
+        function toggle() { let c = document.getElementById('tCon'); c.style.display = (c.style.display === 'none' || c.style.display === '') ? 'block' : 'none'; }
+        function update() {
+            let b = document.getElementById('tBody'), m = 0, i = 0, c = 0; b.innerHTML = "";
+            db.forEach(r => {
+                if(r.st === "La Ciyaaray") { m++; i += r.inc; } else { c++; }
+                b.innerHTML += `<tr><td>${r.dt}</td><td><strong>${r.name}</strong></td><td>${r.dur}</td><td>$${r.inc}</td><td class="${r.st==='La Ciyaaray'?'status-active':'status-cancelled'}">${r.st}</td></tr>`;
+            });
+            document.getElementById('tM').innerText = m; document.getElementById('tI').innerText = "\$" + i; document.getElementById('tC').innerText = c;
+        }
+    </script>
+</body>
+</html>
