@@ -3,136 +3,276 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QANCIYE STADIUM </title>
+    <title>Stadium QANCIYE - Portal-ka Maamulka</title>
+    <!-- Tailwind CSS for Beautiful UI -->
+    <script src="https://tailwindcss.com"></script>
+    <link href="https://googleapis.com" rel="stylesheet">
     <style>
-        :root { --p: #2ecc71; --s: #2c3e50; --d: #e74c3c; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
-        body { background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .container { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 15px; width: 100%; max-width: 600px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-        .page { display: none; } .page.active { display: block; }
-        h1, h2, h3 { text-align: center; margin-bottom: 20px; color: var(--s); }
-        h1 { color: var(--p); border-bottom: 2px solid #ddd; padding-bottom: 10px; }
-        p { color: #555; line-height: 1.6; margin-bottom: 20px; text-align: justify; }
-        button { background: var(--p); color: white; border: none; padding: 12px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; transition: 0.3s; }
-        button:hover { background: #27ae60; transform: scale(1.02); }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; color: var(--s); font-weight: 600; }
-        input, select { width: 100%; padding: 12px; border: 2px solid #bdc3c7; border-radius: 8px; font-size: 16px; }
-        input:focus, select:focus { border-color: var(--p); outline: none; }
-        .table-container { margin-top: 25px; display: none; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
-        th { background: var(--s); color: white; }
-        tr:nth-child(even) { background: #f2f2f2; }
-        .status-active { color: #27ae60; font-weight: bold; }
-        .status-cancelled { color: var(--d); font-weight: bold; }
-        .summary-box { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; margin-top: 20px; }
-        .summary-card { text-align: center; padding: 15px; background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-top: 4px solid var(--p); }
-        .summary-card span { display: block; font-size: 18px; font-weight: bold; color: #3498db; margin-top: 5px; }
+        body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
-<body>
-    <div class="container">
-        <!-- Page 1 -->
-        <div id="page1" class="page active">
-            <h1>Kusoo Dhawaada QANCIYE Stadium</h1>
-            <p><strong>Garoonka Caalamiga ah ee QANCIYE</strong> waa xarun casri ah oo loogu talagalay horumarinta ciyaaraha.</p>
-            <button onclick="go('page2')">Next (Sii Soco)</button>
-        </div>
+<body class="bg-gray-50 text-gray-800 min-h-screen">
 
-        <!-- Page 2 -->
-        <div id="page2" class="page">
-            <h2>Gali System-ka (Login)</h2>
-            <div id="err" style="color: var(--d); text-align: center; margin-bottom: 10px; font-weight: bold;"></div>
-            <div class="form-group">
-                <label>Username</label>
-                <input type="text" id="user" placeholder="admin" required>
+    <!-- 1. LOGIN SCREEN -->
+    <div id="login-section" class="flex items-center justify-center min-h-screen px-4">
+        <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-gray-100">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-green-600 tracking-wide">Stadium QANCIYE</h1>
+                <p class="text-gray-500 mt-2 text-sm">Geli xogtaada si aad u gasho portal-ka maalinlaha ah</p>
             </div>
-            <div class="form-group">
-                <label>Password</label>
-                <input type="password" id="pass" placeholder="1234" required>
+            <div id="login-error" class="hidden mb-4 p-3 bg-red-100 text-red-700 text-sm rounded-lg text-center font-medium">
+                Username ama Password-ka waa khalad!
             </div>
-            <button onclick="login()">Login</button>
-        </div>
-
-        <!-- Page 3 -->
-        <div id="page3" class="page">
-            <h2>Maamulka Kulanka & Xogta Garoonka</h2>
-            <form id="f" onsubmit="save(event)">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div class="form-group"><label>Magaca Kulanka</label><input type="text" id="mName" required></div>
-                    <div class="form-group"><label>Waqtiga (Daqiiqo)</label><input type="number" id="dur" required></div>
-                    <div class="form-group"><label>Kharashka (\$)</label><input type="number" id="inc" required></div>
-                    <div class="form-group">
-                        <label>Xaaladda</label>
-                        <select id="st">
-                            <option value="La Ciyaarayo">La Ciyaarayo</option>
-                            <option value="Waa Baaqday">Waa Baaqday</option>
-                        </select>
-                    </div>
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <div class="mb-5">
+                    <label class="block text-gray-700 text-sm font-semibold mb-2">Username</label>
+                    <input type="text" id="username" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition text-sm">
                 </div>
-                <button type="submit">Kaydi Xogta Kulanka</button>
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-semibold mb-2">Password</label>
+                    <input type="password" id="password" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition text-sm">
+                </div>
+                <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition duration-200 shadow-md">
+                    Soo Gali System-ka
+                </button>
             </form>
-
-            <button onclick="toggle()" style="background: var(--s); margin-top: 15px;">Eeg / Qari Xogta</button>
-            
-            <div id="tCon" class="table-container">
-                <div class="summary-box">
-                    <div class="summary-card">Kulandada: <span id="tw">0</span></div>
-                    <div class="summary-card">Dakhliga: <span id="ti">\$0</span></div>
-                    <div class="summary-card">Baaqday: <span id="tc">0</span></div>
-                </div>
-                <table>
-                    <thead>
-                        <tr><th>Taariikh & Maalin</th><th>Kulanka</th><th>Waqtiga</th><th>Kharashka</th><th>Xaaladda</th></tr>
-                    </thead>
-                    <tbody id="tBody"></tbody>
-                </table>
-            </div>
         </div>
     </div>
 
+    <!-- 2. MAIN DASHBOARD (Hidden by default) -->
+    <div id="dashboard-section" class="hidden">
+        <!-- Navbar -->
+        <nav class="bg-white shadow-sm border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800">Stadium <span class="text-green-600">QANCIYE</span></h1>
+                <p class="text-xs text-gray-500 font-medium">Nidaamka Kaydinta Xogta Maalinlaha ah</p>
+            </div>
+            <button onclick="handleLogout()" class="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-xl text-sm font-medium transition">
+                Ka Bax Portal-ka
+            </button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto p-4 md:p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Left Side: Input Form -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 h-fit">
+                <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                    <span>📝</span> Diiwāngeli Xogta Maanta
+                </h2>
+                <form id="record-form" onsubmit="saveDailyRecord(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2">Taariikhda (Date)</label>
+                        <input type="date" id="record-date" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2">Inta Kulan La Ciyaaray</label>
+                        <input type="number" id="match-count" min="0" value="0" oninput="toggleMatchInputs()" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition text-sm">
+                    </div>
+                    
+                    <!-- Dynamic inputs (Can be 0 if no matches) -->
+                    <div id="conditional-fields">
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2">Saacadaha Kulamada (Wadar ahaan)</label>
+                            <input type="number" id="total-hours" min="0" step="0.1" value="0" oninput="calculateRevenue()" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition text-sm">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2">Qiimaha halki saac ($)</label>
+                            <input type="number" id="hourly-rate" min="0" value="15" oninput="calculateRevenue()" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition text-sm">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2">Kharashka Soo Xerooday ($)</label>
+                        <input type="number" id="total-revenue" min="0" value="0" readonly class="w-full px-4 py-2.5 bg-gray-100 rounded-xl border border-gray-300 font-bold text-green-700 outline-none text-sm">
+                        <p class="text-xs text-gray-400 mt-1">Si otomaatig ah ayaa loo xisaabinayaa (Saacadaha × Qiimaha).</p>
+                    </div>
+
+                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-xl transition duration-200 shadow-sm mt-4">
+                        Kaydi Xogta
+                    </button>
+                </form>
+            </div>
+
+            <!-- Right Side: Analytics & Table Data -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Analytics Summary cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Wadar Kulamada</p>
+                        <h3 id="stat-matches" class="text-2xl font-bold text-gray-800 mt-2">0</h3>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Wadar Saacadaha</p>
+                        <h3 id="stat-hours" class="text-2xl font-bold text-gray-800 mt-2">0 R</h3>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm bg-green-50/50 border-green-100">
+                        <p class="text-xs font-bold uppercase tracking-wider text-green-600">Wadar Lacagta ($)</p>
+                        <h3 id="stat-revenue" class="text-2xl font-bold text-green-700 mt-2">$0.00</h3>
+                    </div>
+                </div>
+
+                <!-- Data Table -->
+                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50/70">
+                        <h2 class="text-lg font-bold text-gray-800">Taariikhda Xogaha La Kaydiyey</h2>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-100 text-gray-600 text-xs font-bold uppercase tracking-wider">
+                                    <th class="px-6 py-3">Taariikhda</th>
+                                    <th class="px-6 py-3">Kulamada</th>
+                                    <th class="px-6 py-3">Saacadaha</th>
+                                    <th class="px-6 py-3">Dakhliga</th>
+                                    <th class="px-6 py-3 text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="records-table-body" class="divide-y divide-gray-200 text-sm">
+                                <!-- Data will be loaded here via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
     <script>
-        let db = [];
-        function go(n) { 
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); 
-            document.getElementById(n).classList.add('active'); 
-        }
-        function login() {
-            if (document.getElementById('user').value === 'admin' && document.getElementById('pass').value === '1234') {
-                go('page3');
+        // Set Default Date Input to Today
+        document.getElementById('record-date').value = new Date().toISOString().split('T')[0];
+
+        // 1. Authentication Logic
+        function handleLogin(event) {
+            event.preventDefault();
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value.trim();
+            
+                        // Credential Check
+            if (user === 'admin' && pass === 'qanciye2026') {
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('dashboard-section').classList.remove('hidden');
+                document.getElementById('login-error').classList.add('hidden');
+                loadDashboardData();
             } else {
-                document.getElementById('err').innerText = "Username ama Password waa khaldan yahay! (admin/1234)";
+                const errorDiv = document.getElementById('login-error');
+                errorDiv.classList.remove('hidden');
             }
         }
-        function save(e) {
-            e.preventDefault();
-            let name = document.getElementById('mName').value;
-            let dur = document.getElementById('dur').value;
-            let inc = parseFloat(document.getElementById('inc').value);
-            let st = document.getElementById('st').value;
-            
-            if(st === "Waa Baaqday") inc = 0;
-            
-            db.push({ date: new Date().toLocaleDateString('so-SO', { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric' }), name, dur, inc, st });
-            document.getElementById('f').reset(); 
-            update(); 
-            alert('La kaydiyey!');
+
+        function handleLogout() {
+            document.getElementById('dashboard-section').classList.add('hidden');
+            document.getElementById('login-section').classList.remove('hidden');
+            document.getElementById('login-form').reset();
         }
-        function toggle() { 
-            let c = document.getElementById('tCon'); 
-            c.style.display = (c.style.display === 'none' || c.style.display === '') ? 'block' : 'none'; 
+
+        // 2. Calculation Logic
+        function toggleMatchInputs() {
+            const matchCount = parseInt(document.getElementById('match-count').value) || 0;
+            const hoursInput = document.getElementById('total-hours');
+            
+            if (matchCount === 0) {
+                hoursInput.value = 0;
+                calculateRevenue();
+            }
         }
-        function update() {
-            let b = document.getElementById('tBody'), t = 0, i = 0, c = 0;
-            b.innerHTML = "";
-            db.forEach(r => {
-                if(r.st === "La Ciyaarayo") { t++; i += r.inc; } else { c++; }
-                b.innerHTML += `<tr><td>${r.date}</td><td>${r.name}</td><td>${r.dur} dsn</td><td>$${r.inc}</td><td class="${r.st==='La Ciyaarayo'?'status-active':'status-cancelled'}">${r.st}</td></tr>`;
-            });
-            document.getElementById('tw').innerText = t;
-            document.getElementById('ti').innerText = "\$" + i;
-            document.getElementById('tc').innerText = c;
+
+        function calculateRevenue() {
+            const hours = parseFloat(document.getElementById('total-hours').value) || 0;
+            const rate = parseFloat(document.getElementById('hourly-rate').value) || 0;
+            const total = hours * rate;
+            document.getElementById('total-revenue').value = total.toFixed(2);
+        }
+
+        // 3. Data CRUD Logic via localStorage
+        function getRecords() {
+            return JSON.parse(localStorage.getItem('stadium_records')) || [];
+        }
+
+        function saveDailyRecord(event) {
+            event.preventDefault();
+            
+            const date = document.getElementById('record-date').value;
+            const matches = parseInt(document.getElementById('match-count').value) || 0;
+            const hours = parseFloat(document.getElementById('total-hours').value) || 0;
+            const revenue = parseFloat(document.getElementById('total-revenue').value) || 0;
+
+            const records = getRecords();
+
+            // Check if record for this date already exists to avoid duplicates
+            const existingIndex = records.findIndex(r => r.date === date);
+            const newRecord = { date, matches, hours, revenue };
+
+            if (existingIndex > -1) {
+                records[existingIndex] = newRecord; // Update
+            } else {
+                records.push(newRecord); // Add new
+            }
+
+            // Sort records by date descending
+            records.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            localStorage.setItem('stadium_records', JSON.stringify(records));
+            
+            // Reset fields but keep default rate and date
+            document.getElementById('match-count').value = 0;
+            document.getElementById('total-hours').value = 0;
+            document.getElementById('total-revenue').value = 0;
+            document.getElementById('record-date').value = new Date().toISOString().split('T')[0];
+
+            loadDashboardData();
+        }
+
+        function deleteRecord(date) {
+            if (confirm(`Ma hubtaa inaad tirtirto xogta taariikhda: ${date}?`)) {
+                let records = getRecords();
+                records = records.filter(r => r.date !== date);
+                localStorage.setItem('stadium_records', JSON.stringify(records));
+                loadDashboardData();
+            }
+        }
+
+        // 4. Render Dashboard Data
+        function loadDashboardData() {
+            const records = getRecords();
+            const tbody = document.getElementById('records-table-body');
+            
+            // Reset Stats
+            let totalMatches = 0;
+            let totalHours = 0;
+            let totalRevenue = 0;
+
+            tbody.innerHTML = '';
+
+            if (records.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-gray-400">Wax xog ah weli lama kaydin.</td></tr>`;
+            } else {
+                records.forEach(record => {
+                    totalMatches += record.matches;
+                    totalHours += record.hours;
+                    totalRevenue += record.revenue;
+
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-gray-50 transition">
+                            <td class="px-6 py-4 font-medium text-gray-900">${record.date}</td>
+                            <td class="px-6 py-4">${record.matches} Kulan</td>
+                            <td class="px-6 py-4">${record.hours} Saacood</td>
+                            <td class="px-6 py-4 font-semibold text-green-600">$${record.revenue.toFixed(2)}</td>
+                            <td class="px-6 py-4 text-center">
+                                <button onclick="deleteRecord('${record.date}')" class="text-red-500 hover:text-red-700 font-medium text-xs bg-red-50 hover:bg-red-100 px-2.5 py-1.5 rounded-lg transition">
+                                    Tirtir
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // Update DOM Summary Stats
+            document.getElementById('stat-matches').innerText = totalMatches;
+            document.getElementById('stat-hours').innerText = totalHours.toFixed(1) + ' R';
+            document.getElementById('stat-revenue').innerText = '\$' + totalRevenue.toFixed(2);
         }
     </script>
 </body>
